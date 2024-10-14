@@ -49,8 +49,16 @@ head(penguins)
 #| label: theplot
 ggplot(data=penguins)+
     geom_point(aes(x=bill_length_mm,y = bill_depth_mm,color=species,shape=sex),size=3)+
-    scale_color_manual(values = c("Adelie" = "lightblue","Chinstrap"="magenta","Gentoo"="red")) #+
-    scale_shape_manual(values = c("Male" = "pink","Female"="red","NA"="orange","Premium"="green","Ideal"="darkgreen"))
+    scale_color_manual(values = c("Adelie" = "lightblue","Chinstrap"="magenta","Gentoo"="red")) +
+    scale_shape_manual(values = c("male" = 15,"female"= 17,"NA"=18)) +
+    labs(x = "Bil length (mm)",y="Bill depth (mm)",title="Bill length and depth of Palmer penguins") +
+    theme_classic()+
+    theme(axis.text=element_text(size=14),
+          axis.title=element_text(size = 20),
+          plot.title=element_text(size=24,hjust=0.5),
+          legend.text = element_text(size=14),
+          legend.title = element_text(size = 20)
+          )
 
 
 ```
