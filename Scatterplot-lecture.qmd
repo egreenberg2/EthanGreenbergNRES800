@@ -31,7 +31,7 @@ library(palmerpenguins)
 
 ```{r}
 #| label: loaddata
-penguins
+data(penguins)
 
 ```
 
