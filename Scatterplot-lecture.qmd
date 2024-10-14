@@ -1,0 +1,50 @@
+---
+title: "Visualization mini challenge"
+author: "Ethan Greenberg"
+date: today
+format: html
+---
+
+1.  Change the author in the yaml to your name
+
+2.  Install the `palmerpenquins` library. Remember to comment out the install line after you have installed the library.
+
+
+
+```{r}
+#| label: installpackage
+
+
+```
+
+3.  Load the `tidyverse` and `palmerpenguins` libraries
+
+```{r}
+#| label: loadlibraries
+
+
+```
+
+4.  Load the `penguins` dataset
+
+```{r}
+#| label: loaddata
+
+
+```
+
+5.  Examine the dataset
+
+```{r}
+#| label: examinedata
+
+
+```
+
+6.  Create a scatter plot of `bill_length_mm` and `bill_depth_mm` with `species` as the color and having the point shape be `sex`. Define the shapes and colors using `scale_color_manual` and `scale_shape_manual`. Size of the points should 3.
+
+```{r}
+#| label: theplot
+
+
+```
