@@ -12,7 +12,8 @@ format: html
 
 
 ```{r}
-#| label: installpackage
+#| label: installpackage 
+#| install.packages("palmerpenguins")
 
 
 ```
@@ -21,7 +22,8 @@ format: html
 
 ```{r}
 #| label: loadlibraries
-
+library(tidyverse)
+library(palmerpenguins)
 
 ```
 
@@ -29,7 +31,7 @@ format: html
 
 ```{r}
 #| label: loaddata
-
+penguins
 
 ```
 
@@ -37,7 +39,7 @@ format: html
 
 ```{r}
 #| label: examinedata
-
+head(penguins)
 
 ```
 
@@ -45,6 +47,8 @@ format: html
 
 ```{r}
 #| label: theplot
-
+ggplot(data=penguins)+
+    geom_point(aes(x=bill_length_mm,y = bill_depth_mm,color=species,shape=sex),size=3) #+
+    #scale_color_manual(values = species)
 
 ```
