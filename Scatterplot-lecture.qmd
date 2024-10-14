@@ -48,6 +48,9 @@ head(penguins)
 ```{r}
 #| label: theplot
 ggplot(data=penguins)+
-    geom_point(aes(x=bill_length_mm,y = bill_depth_mm,color=species,shape=sex),size=3)
+    geom_point(aes(x=bill_length_mm,y = bill_depth_mm,color=species,shape=sex),size=3)+
+    scale_color_manual(values = c("Adelie" = "lightblue","Chinstrap"="magenta","Gentoo"="red")) #+
+    scale_shape_manual(values = c("Male" = "pink","Female"="red","NA"="orange","Premium"="green","Ideal"="darkgreen"))
+
 
 ```
