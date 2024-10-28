@@ -28,12 +28,55 @@ world_data_country %>%
 ##Scatterplot
 ```{r}
 #| label: scatterplot
-
+library(broom)
 ggplot(data = europe_data) +
     geom_point(aes(x=birth_rate,y=death_rate),color="red",size=2) + 
+    geom_smooth(aes(x = birth_rate, y = death_rate),method="lm") +
     labs(x = "Birth rate (per 1,000 people)",y="Death rate (per 1,000 people)") +
     coord_cartesian(xlim = c(0,18),ylim=c(0,18)) +
     theme_classic() +
     theme(axis.text = element_text(size=12))
+
+min_birth <- min(europe_data$birth_rate, na.rm=TRUE)
+max_birth <- max(europe_data$birth_rate, na.rm=TRUE)
+
+new_data = data.frame(birth_rate = seq(min_birth,max_birth),length=20)
+pred_data <- augment(mod, newdata = new_data, se_fit=TRUE, conf.level = 0.95, interval = "confidence")
+
+ggplot(data = europe_data) +
+    geom_ribbon(data = pred_data, aes(x=birth_rate,ymin = .lower, ymax=.upper), fill = "lightgray",alpha=0.6) +
+    geom_line(data = pred_data, aes(x=birth_rate, y = .fitted,),color = "blue",linetype="dashed",linewidth=1)+
+    geom_point(data = europe_data,aes(x=birth_rate,y=death_rate),color="red",size=2)
+
+mod <- lm(death_rate ~ birth_rate, data = europe_data)
+summary(mod)
+```
+
+###Box plots
+```{r}
+#| label: boxplot
+
+ggplot(data = world_data_country %>% filter(!is.na(continent))) +
+    geom_boxplot(aes(y=life_exp_at_birth,x=continent,fill=continent),outlier.color=NA) +
+    geom_point(aes(y = life_exp_at_birth,x=continent),position_jitter(width=0.15)) +
+    theme_classic()
+```
+
+##violin plots
+```{r}
+#| label: violinplot
+
+ggplot(data = world_data_country %>% filter(!is.na(continent))) +
+    geom_violin(aes(y=life_exp_at_birth,x=continent,fill=continent)) +
+    geom_point(aes(y = life_exp_at_birth,x=continent)) +
+    theme_classic()
+```
+
+##density
+```{r}
+#| label: density
+ggplot(data = world_data_country %>% filter(!is.na(continent))) +
+    geom_density(aes(x=life_exp_at_birth,fill=continent)) +
+    theme_classic()
 ```
 
