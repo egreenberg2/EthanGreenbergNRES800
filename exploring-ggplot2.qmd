@@ -80,3 +80,23 @@ ggplot(data = world_data_country %>% filter(!is.na(continent))) +
     theme_classic()
 ```
 
+#column plot
+```{r}
+
+world_data_country %>% 
+    filter (!is.na(continent),
+            !is.na(life_exp_at_birth)) %>% 
+    group_by(continent) %>% 
+    summarise(mean_exp = mean(life_exp_at_birth),sd_exp = sd(life_exp_at_birth),se_exp = sd_exp/sqrt(n())) %>% 
+    mutate(ci_lo = mean_exp-1.96*se_exp,ci_hi=mean_exp+1.96*se_exp) -> life_exp_means
+
+ggplot(data = life_exp_means) +
+    geom_col(aes(x=continent,y=mean_exp,fill = continent), color = "black") +
+    geom_errorbar(aes(x = continent, ymax=ci_hi,ymin=ci_lo),width=0.25,linewidth=1)+
+    coord_flip(ylim = c(0,100),xlim=c(0.5,5.5),expand=FALSE)+
+    coord_cartesian(ylim=c(0,100),xlim=c(0.5,5.5),expand=FALSE) +
+    theme_classic() +
+    theme(axis.text = element_text(size=14),axis_title=element_text(size=16),legend.position = "none")
+    
+```
+
