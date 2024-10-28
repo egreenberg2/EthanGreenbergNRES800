@@ -1,0 +1,39 @@
+---
+title: "Exploring more plots with ggplot2"
+author: "Ethan Greenberg"
+format: 
+    html:
+        embed-resources: true
+editor: visual
+---
+## Setup
+```{r}
+#install.packages("countrycode")
+
+library(tidyverse)
+library(countrycode)
+world_data <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-10-22/cia_factbook.csv")
+```
+
+##Data manipulation
+```{r}
+#| label: datamanipulaiton
+
+world_data %>% 
+    mutate(continent = countrycode(country,"country.name", destination="continent")) -> world_data_country
+world_data_country %>% 
+    filter(continent == "Europe") -> europe_data
+```
+
+##Scatterplot
+```{r}
+#| label: scatterplot
+
+ggplot(data = europe_data) +
+    geom_point(aes(x=birth_rate,y=death_rate),color="red",size=2) + 
+    labs(x = "Birth rate (per 1,000 people)",y="Death rate (per 1,000 people)") +
+    coord_cartesian(xlim = c(0,18),ylim=c(0,18)) +
+    theme_classic() +
+    theme(axis.text = element_text(size=12))
+```
+
