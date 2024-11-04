@@ -1,0 +1,51 @@
+---
+title: "Exploring more plots with ggplot2"
+author: "Ethan Greenberg"
+format: 
+    html:
+        embed-resources: true
+editor: visual
+---
+```{r}
+#devtools::install_github("llendway/gardenR")
+
+library(gardenR)
+library(tidyverse)
+
+harvest_2021 %>% 
+    group_by(date,vegetable) %>% 
+    summarize(ttl_harvest = sum(weight)) -> total_harvest_date
+
+min(total_harvest_date$date) #earliest day
+max(total_harvest_date$date) #latest day
+unique(total_harvest_date$vegetable)
+
+expand_grid(date=seq(min(total_harvest_date$date),max(total_harvest_date$date),by="1 day"),vegetable=unique(total_harvest_date$vegetable)) -> day_veggies
+day_veggies %>% 
+    full_join(total_harvest_date,join_by(date,vegetable)) %>% 
+    mutate(ttl_harvest = replace_na(ttl_harvest,0)) -> full_veggie_df
+
+full_veggie_df %>% 
+    filter (vegetable == "lettuce") %>% 
+    ggplot() +
+    geom_line(aes(x=date,y=ttl_harvest)) +
+    scale_x_date(date_breaks = "4 week", date_labels = "%m-%d-%y")
+
+full_veggie_df %>% 
+    filter(vegetable == "lettuce") %>% 
+    mutate(doy = yday(date)) %>% 
+    distinct(date,doy) %>% 
+    slice(seq(from = 1, to = 314, by = 14)) -> every_14
+
+full_veggie_df %>% 
+    filter(vegetable == "lettuce") %>% 
+    mutate(doy==yday(date)) %>% 
+    ggplot() + 
+    geom_line(aes(x=doy,y = ttl_harvest)) +
+    scale_x_continuous(breaks = every_14$doy,labels = every_14$date2) %>% 
+    theme(axis.text = element_text(size=14))
+full_veggie_df %>% 
+    filter(vegetable == "lettuce") %>% 
+    ggplot() +
+    geom_point(aes(x=date,y=vegetable,size=ttl_harvest))
+```
