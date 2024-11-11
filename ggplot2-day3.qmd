@@ -1,0 +1,78 @@
+---
+title: "Illustrating what can be done with ggplot2"
+author: "Ethan Greenberg"
+date: today
+format:
+  html:
+    embed-resources: true
+---
+
+
+```{r}
+#| label: setup
+
+#install.packages("countrycode")
+
+library(tidyverse)
+library(countrycode)
+
+world_data <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-10-22/cia_factbook.csv")
+
+
+```
+
+## Data manipulation
+
+```{r}
+#| label: datamanipulation
+
+world_data |> 
+  mutate(continent = countrycode(country, "country.name", destination = "continent")) |> 
+  filter(!is.na(continent)) |> 
+  select(country, continent, life_exp_at_birth, population) |> 
+  group_by(continent) |> 
+  mutate(med_life_exp = median(life_exp_at_birth, na.rm = T),
+         highlight = case_when(population == max(population, na.rm = TRUE) ~ TRUE,
+                               life_exp_at_birth == max(life_exp_at_birth, na.rm = TRUE) ~ TRUE,
+                               life_exp_at_birth == min(life_exp_at_birth, na.rm = TRUE) ~ TRUE,
+                               TRUE ~ FALSE)) |> 
+  ungroup() |> 
+  mutate(c = as.numeric(as.factor(continent)),
+         r = sqrt(population/ pi) / 0.8e5,
+         y = c - r ) -> world_data_country
+
+
+range(world_data_country$life_exp_at_birth, na.rm = TRUE)
+
+
+```
+
+## Create our plot
+
+```{r}
+#| label: world_plot
+
+ggplot(data = world_data_country) +
+  geom_segment(aes(x = 49, xend = 90, y = c), color = "darkgreen", alpha = 0.2) +
+  geom_text(aes(x = 49, y = c, label = continent), hjust = 0, vjust = 0, size = 20, fontface = "bold", color = "#EFE9D9") + #adding text to the lines of continent
+  geom_point(aes(x = life_exp_at_birth, y, size = population), shape = 21, fill="white",alpha=0.6) + #adding circles which vary in size by population
+  scale_size_area(max_size = 24) +
+    ggrepel::geom_label_repel(data=. %>%  filter(highlight), aes(x=life_exp_at_birth,y=y-r,label=paste(country,round(life_exp_at_birth,1))),direction = "y", nudge_y=0.12, min.segment.length = 0, segment.size=0.2,label.size = 0,label.padding=0.2,size=3.5) +
+  scale_y_reverse() +
+  theme_void() +
+    theme(legend.position = "none",
+          plot.background = element_rect(fill="grey99",color = NA),
+          axis.title = element_blank(),
+          axis.text=element_blank(),
+          panel.grid.major.y = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.grid.minor.y = element_blank().
+          plot.margin = margin(10,10,10,10)) +
+    geom_text(aes(x = med_life_exp, y = c + 0.03, label = paste0("▲", "\n", round(med_life_exp, 1))), stat = "unique", vjust = 1, color = "#EA8B70", size = 3.5, lineheight = 0.9, fontface = "bold") +
+
+ggsave("test.png", width = 12)
+
+
+
+```
+
